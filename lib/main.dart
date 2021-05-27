@@ -50,16 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: AppColors.backgroundColor,
                     child: Column(
                       children: [
-                        Container(
-                          width: double.infinity,
-                          height: 330,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(8),
-                            ),
-                          ),
-                        ),
+                        _buildCardView(),
                       ],
                     ),
                   ),
@@ -68,6 +59,79 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCardView() {
+    return Container(
+      width: double.infinity,
+      height: 330,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(
+          Radius.circular(24),
+        ),
+      ),
+      child: Column(
+        children: [
+          _buildCardHeader(),
+          _buildLineView(),
+          _buildClientInformation(),
+        ],
+      ),
+    );
+  }
+
+  _buildLineView() {
+    return Container(
+      width: double.infinity,
+      height: 1,
+      color: AppColors.lineViewColor,
+    );
+  }
+
+  _buildCardHeader() {
+    return Container(
+      height: 80,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Sanitization',
+            style: AppStyles.appbar_title,
+          ),
+          ElevatedButton(onPressed: () {}, child: Text('ACCEPTED'))
+        ],
+      ),
+    );
+  }
+
+  _buildClientInformation() {
+    return Container(
+      height: 80,
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Image.asset(
+                'res/images/client.png',
+                width: 20,
+                height: 20,
+              ),
+              SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  'Client name',
+                  style: AppStyles.card_view_body,
+                ),
+              )
+            ],
+          ),
+        ],
       ),
     );
   }

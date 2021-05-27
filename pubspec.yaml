@@ -62,6 +62,8 @@ flutter:
       fonts:
         - asset: res/fonts/Montserrat-Bold.ttf
           weight: 700
+        - asset: res/fonts/Montserrat-Medium.ttf
+          weight: 500
 
   #
   # For details regarding fonts from package dependencies,
