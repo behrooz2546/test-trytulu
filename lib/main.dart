@@ -31,6 +31,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late List<CheckListModel> checkListModel;
+
+  @override
+  void initState() {
+    super.initState();
+    checkListModel = CheckListModel.getSample();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -44,14 +52,60 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: 'Task Information',
                 ),
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 32),
-                    color: AppColors.backgroundColor,
-                    child: Column(
-                      children: [
-                        _buildCardView(),
-                      ],
+                  child: SingleChildScrollView(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 32,
+                      ),
+                      color: AppColors.backgroundColor,
+                      child: Column(
+                        children: [
+                          _buildCardView(),
+                          SizedBox(height: 32),
+                          ExpansionPanelList(
+                            expansionCallback: (int index, bool isExpanded) {
+                              setState(() {
+                                checkListModel[index].isExpanded = !isExpanded;
+                              });
+                            },
+                            animationDuration: Duration(milliseconds: 300),
+                            children: checkListModel.map<ExpansionPanel>(
+                                (CheckListModel checkListModel) {
+                              return ExpansionPanel(
+                                headerBuilder:
+                                    (BuildContext context, bool isExpanded) {
+                                  return ListTile(
+                                    title: Text(checkListModel.name),
+                                  );
+                                },
+                                body: Container(
+                                  child: ListView.separated(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      return ListTile(
+                                        title: Text(
+                                          checkListModel.items[index].title,
+                                        ),
+                                        subtitle: Text(
+                                          checkListModel.items[index].input,
+                                        ),
+                                      );
+                                    },
+                                    separatorBuilder: (context, index) {
+                                      return Container();
+                                    },
+                                    itemCount: checkListModel.items.length,
+                                  ),
+                                ),
+                                isExpanded: checkListModel.isExpanded,
+                              );
+                            }).toList(),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 )
@@ -264,5 +318,55 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+}
+
+class Item {
+  String title;
+  String input;
+
+  Item({
+    required this.title,
+    required this.input,
+  });
+}
+
+class CheckListModel {
+  String name;
+  List<Item> items;
+  bool isExpanded;
+
+  CheckListModel({
+    required this.name,
+    required this.items,
+    this.isExpanded = false,
+  });
+
+  static List<CheckListModel> getSample() {
+    return [
+      CheckListModel(
+        name: "Before starting",
+        items: [
+          Item(title: "Selfie with equipment", input: "photo"),
+          Item(title: "Record filling up bucket ", input: "video"),
+          Item(title: "Bucket soap measurement", input: "number"),
+        ],
+      ),
+      CheckListModel(
+        name: "Main Room",
+        items: [
+          Item(title: "Photo of room", input: "photo"),
+          Item(title: "Mop the floor", input: "video"),
+        ],
+      ),
+      CheckListModel(
+        name: "Finishing",
+        items: [
+          Item(title: "Clean equipment and dispose of rubbish", input: "photo"),
+          Item(title: "Equipment put back", input: "video"),
+          Item(title: "Building door locked", input: "checkbox"),
+        ],
+      )
+    ];
   }
 }
