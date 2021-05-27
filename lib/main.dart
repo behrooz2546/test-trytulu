@@ -63,47 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           _buildCardView(),
                           SizedBox(height: 32),
-                          ExpansionPanelList(
-                            expansionCallback: (int index, bool isExpanded) {
-                              setState(() {
-                                checkListModel[index].isExpanded = !isExpanded;
-                              });
-                            },
-                            animationDuration: Duration(milliseconds: 300),
-                            children: checkListModel.map<ExpansionPanel>(
-                                (CheckListModel checkListModel) {
-                              return ExpansionPanel(
-                                headerBuilder:
-                                    (BuildContext context, bool isExpanded) {
-                                  return ListTile(
-                                    title: Text(checkListModel.name),
-                                  );
-                                },
-                                body: Container(
-                                  child: ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        title: Text(
-                                          checkListModel.items[index].title,
-                                        ),
-                                        subtitle: Text(
-                                          checkListModel.items[index].input,
-                                        ),
-                                      );
-                                    },
-                                    separatorBuilder: (context, index) {
-                                      return Container();
-                                    },
-                                    itemCount: checkListModel.items.length,
-                                  ),
-                                ),
-                                isExpanded: checkListModel.isExpanded,
-                              );
-                            }).toList(),
-                          )
+                          _buildChecklist(),
                         ],
                       ),
                     ),
@@ -165,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
             style: ButtonStyle(
               padding: MaterialStateProperty.all<EdgeInsets>(
                   EdgeInsets.symmetric(horizontal: 18, vertical: 12)),
-              backgroundColor: MaterialStateProperty.all(AppColors.darkPurple),
+              backgroundColor: MaterialStateProperty.all(AppColors.main),
               shape: MaterialStateProperty.all(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16))),
             ),
@@ -257,6 +217,80 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
+    );
+  }
+
+  _buildChecklist() {
+    return Column(
+      children: [
+        Container(
+            height: 64,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: AppColors.main,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  'Checklist',
+                  textAlign: TextAlign.left,
+                  style: AppStyles.appbar_title.copyWith(color: Colors.white),
+                ),
+              ],
+            )),
+        Container(
+          color: Colors.white,
+          child: ListView.builder(
+            itemCount: checkListModel.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              var model = checkListModel[index];
+              return ExpansionTile(
+                tilePadding: const EdgeInsets.symmetric(horizontal: 80),
+                title: Text(
+                  model.name,
+                  style: AppStyles.checklist_item_title,
+                ),
+                children: [
+                  Container(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(
+                            model.items[index].title,
+                            style: AppStyles.checklist_item_title.copyWith(
+                              color: AppColors.black,
+                              fontSize: 14,
+                            ),
+                          ),
+                          subtitle: Text(
+                            model.items[index].input,
+                            style: AppStyles.checklist_item_title.copyWith(
+                              color: AppColors.gray,
+                              fontSize: 10,
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return Container();
+                      },
+                      itemCount: model.items.length,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        )
+      ],
     );
   }
 

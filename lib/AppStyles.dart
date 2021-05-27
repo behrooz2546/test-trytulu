@@ -17,4 +17,12 @@ class AppStyles {
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.w500,
   );
+
+  static const checklist_item_title = TextStyle(
+    fontFamily: 'Montserrat',
+    color: AppColors.main,
+    fontSize: 16,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.w700,
+  );
 }
