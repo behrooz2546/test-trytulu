@@ -31,14 +31,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,7 +40,9 @@ class _MyHomePageState extends State<MyHomePage> {
           body: Container(
             child: Column(
               children: [
-                CustomAppBarWidget(),
+                CustomAppBarWidget(
+                  title: 'Task Information',
+                ),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(

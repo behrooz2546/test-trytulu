@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:trytulu/AppColors.dart';
 import 'package:trytulu/AppStyles.dart';
 
 class CustomAppBarWidget extends StatelessWidget {
-  const CustomAppBarWidget({Key? key}) : super(key: key);
+  final String title;
+  const CustomAppBarWidget({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +23,8 @@ class CustomAppBarWidget extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: Text(
-              'Task Information',
+              title,
+              style: AppStyles.appbar_title,
             ),
           ),
           Align(
