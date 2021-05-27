@@ -66,7 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildCardView() {
     return Container(
       width: double.infinity,
-      height: 330,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.all(
@@ -78,6 +77,10 @@ class _MyHomePageState extends State<MyHomePage> {
           _buildCardHeader(),
           _buildLineView(),
           _buildClientInformation(),
+          _buildLineView(),
+          _buildLocationView(),
+          _buildLineView(),
+          _buildCalendarView(),
         ],
       ),
     );
@@ -102,7 +105,17 @@ class _MyHomePageState extends State<MyHomePage> {
             'Sanitization',
             style: AppStyles.appbar_title,
           ),
-          ElevatedButton(onPressed: () {}, child: Text('ACCEPTED'))
+          ElevatedButton(
+            onPressed: () {},
+            child: Text('ACCEPTED'),
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all<EdgeInsets>(
+                  EdgeInsets.symmetric(horizontal: 18, vertical: 12)),
+              backgroundColor: MaterialStateProperty.all(AppColors.darkPurple),
+              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16))),
+            ),
+          )
         ],
       ),
     );
@@ -130,6 +143,123 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               )
             ],
+          ),
+          SizedBox(height: 8),
+          Row(
+            children: [
+              Image.asset(
+                'res/images/phone.png',
+                width: 20,
+                height: 20,
+              ),
+              SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  '+1 2344366753',
+                  style: AppStyles.card_view_body,
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  _buildLocationView() {
+    return Container(
+      height: 80,
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Image.asset(
+                'res/images/location.png',
+                width: 20,
+                height: 20,
+              ),
+              SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  '2715 Ash Dr. San Jose, South Dakota 83475',
+                  style: AppStyles.card_view_body,
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.backgroundColor,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: Image.asset(
+                    'res/images/map_enter.png',
+                  ),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  _buildCalendarView() {
+    return Container(
+      height: 110,
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Image.asset(
+                'res/images/calendar.png',
+                width: 20,
+                height: 20,
+              ),
+              SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  'Wed 18, Nov',
+                  style: AppStyles.card_view_body,
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: 8),
+          Row(
+            children: [
+              Image.asset(
+                'res/images/time.png',
+                width: 20,
+                height: 20,
+              ),
+              SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  'Start: 2:00am - 5:00am',
+                  style: AppStyles.card_view_body,
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: 8),
+          Expanded(
+            child: Row(
+              children: [
+                Container(width: 20, height: 20),
+                SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    'Time for task: 3 hours',
+                    style: AppStyles.card_view_body,
+                  ),
+                )
+              ],
+            ),
           ),
         ],
       ),
