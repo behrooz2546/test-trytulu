@@ -1,8 +1,17 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'package:trytulu/models/ItemModel.dart';
 
+part 'ChecklistModel.g.dart';
+
+@JsonSerializable()
 class CheckListModel {
+  @JsonKey()
   String name;
+
+  @JsonKey()
   List<ItemModel> items;
+
+  @JsonKey(ignore: true)
   bool isExpanded;
 
   CheckListModel({
@@ -10,6 +19,11 @@ class CheckListModel {
     required this.items,
     this.isExpanded = false,
   });
+
+  factory CheckListModel.fromJson(Map<String, dynamic> json) =>
+      _$CheckListModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CheckListModelToJson(this);
 
   static List<CheckListModel> getSample() {
     return [
