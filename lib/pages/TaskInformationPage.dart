@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:trytulu/AppColors.dart';
 import 'package:trytulu/AppStyles.dart';
 import 'package:trytulu/CustomAppBarWidget.dart';
-import 'package:trytulu/models/ChecklistModel.dart';
 import 'package:trytulu/models/TaskModel.dart';
 import 'package:trytulu/services/TaskService.dart';
 
@@ -16,12 +15,12 @@ class TaskInformationPage extends StatefulWidget {
 }
 
 class _TaskInformationPageState extends State<TaskInformationPage> {
-  late List<CheckListModel> checkListModel;
+  late TaskModel _taskModel;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    checkListModel = CheckListModel.getSample();
 
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       afterFirstLayout();
@@ -38,6 +37,10 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
           .map((e) => TaskModel.fromJson(e as Map<String, dynamic>))
           .toList();
       print(tasks);
+      setState(() {
+        _taskModel = tasks[0];
+        isLoading = false;
+      });
     } else {
       // Error code received from server
       final code = response.statusCode;
@@ -52,31 +55,35 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
       child: SafeArea(
         child: Scaffold(
           body: Container(
-            child: Column(
-              children: [
-                CustomAppBarWidget(
-                  title: 'Task Information',
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 32,
+            child: isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Column(
+                    children: [
+                      CustomAppBarWidget(
+                        title: 'Task Information',
                       ),
-                      color: AppColors.backgroundColor,
-                      child: Column(
-                        children: [
-                          _buildCardView(),
-                          SizedBox(height: 32),
-                          _buildChecklist(),
-                        ],
-                      ),
-                    ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 32,
+                            ),
+                            color: AppColors.backgroundColor,
+                            child: Column(
+                              children: [
+                                _buildCardView(),
+                                SizedBox(height: 32),
+                                _buildChecklist(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                )
-              ],
-            ),
           ),
         ),
       ),
@@ -122,7 +129,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Sanitization',
+            _taskModel.name,
             style: AppStyles.appbar_title,
           ),
           ElevatedButton(
@@ -158,7 +165,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  'Client name',
+                  _taskModel.location,
                   style: AppStyles.card_view_body,
                 ),
               )
@@ -203,7 +210,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  '2715 Ash Dr. San Jose, South Dakota 83475',
+                  _taskModel.location,
                   style: AppStyles.card_view_body,
                 ),
               ),
@@ -251,11 +258,11 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
         Container(
           color: Colors.white,
           child: ListView.builder(
-            itemCount: checkListModel.length,
+            itemCount: _taskModel.checkList.length,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              var model = checkListModel[index];
+              var model = _taskModel.checkList[index];
               return ExpansionTile(
                 tilePadding: const EdgeInsets.symmetric(horizontal: 80),
                 title: Text(
@@ -317,7 +324,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  'Wed 18, Nov',
+                  _taskModel.startTime.toString(),
                   style: AppStyles.card_view_body,
                 ),
               )
@@ -334,7 +341,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  'Start: 2:00am - 5:00am',
+                  _taskModel.finishByTime.toString(),
                   style: AppStyles.card_view_body,
                 ),
               )
