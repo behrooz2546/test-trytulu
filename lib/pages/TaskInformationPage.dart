@@ -1,11 +1,9 @@
-import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:trytulu/AppColors.dart';
 import 'package:trytulu/AppStyles.dart';
 import 'package:trytulu/CustomAppBarWidget.dart';
 import 'package:trytulu/models/TaskModel.dart';
-import 'package:trytulu/services/TaskService.dart';
+import 'package:trytulu/services/TaskRepository.dart';
 
 class TaskInformationPage extends StatefulWidget {
   TaskInformationPage({Key? key}) : super(key: key);
@@ -15,7 +13,7 @@ class TaskInformationPage extends StatefulWidget {
 }
 
 class _TaskInformationPageState extends State<TaskInformationPage> {
-  late TaskModel _taskModel;
+  TaskModel? _taskModel;
   bool isLoading = true;
 
   @override
@@ -28,23 +26,15 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
   }
 
   afterFirstLayout() async {
-    var taskService = Provider.of<ChopperClient>(context, listen: false)
-        .getService<TaskService>();
-    var response = await taskService.getTasks();
+    var tasks = await TaskRepository.fetchTasks(context);
 
-    if (response.isSuccessful) {
-      final List<TaskModel> tasks = (response.body as List<dynamic>)
-          .map((e) => TaskModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-      setState(() {
+    setState(() {
+      if (tasks != null) {
         _taskModel = tasks[0];
-        isLoading = false;
-      });
-    } else {
-      // Error code received from server
-      final code = response.statusCode;
-      final error = response.error;
-    }
+      }
+
+      isLoading = false;
+    });
   }
 
   @override
@@ -130,7 +120,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            _taskModel.name,
+            _taskModel?.name ?? "",
             style: AppStyles.appbar_title,
           ),
           ElevatedButton(
@@ -166,7 +156,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  _taskModel.location,
+                  _taskModel?.location ?? "",
                   style: AppStyles.card_view_body,
                 ),
               )
@@ -211,7 +201,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  _taskModel.location,
+                  _taskModel?.location ?? "",
                   style: AppStyles.card_view_body,
                 ),
               ),
@@ -259,46 +249,45 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
         Container(
           color: Colors.white,
           child: ListView.builder(
-            itemCount: _taskModel.checkList.length,
+            itemCount: _taskModel?.checkList.length ?? 0,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              var model = _taskModel.checkList[index];
+              var model = _taskModel?.checkList[index];
               return ExpansionTile(
                 collapsedIconColor: AppColors.main,
                 tilePadding: const EdgeInsets.symmetric(horizontal: 80),
                 title: Text(
-                  model.name,
+                  model?.name ?? "",
                   style: AppStyles.checklist_item_title,
                 ),
                 children: [
                   Container(
                     child: ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(
-                            model.items[index].title,
-                            style: AppStyles.checklist_item_title.copyWith(
-                              color: AppColors.black,
-                              fontSize: 14,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(
+                              model?.items[index].title ?? "",
+                              style: AppStyles.checklist_item_title.copyWith(
+                                color: AppColors.black,
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                          subtitle: Text(
-                            model.items[index].input,
-                            style: AppStyles.checklist_item_title.copyWith(
-                              color: AppColors.gray,
-                              fontSize: 10,
+                            subtitle: Text(
+                              model?.items[index].input ?? "",
+                              style: AppStyles.checklist_item_title.copyWith(
+                                color: AppColors.gray,
+                                fontSize: 10,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return Container();
-                      },
-                      itemCount: model.items.length,
-                    ),
+                          );
+                        },
+                        separatorBuilder: (context, index) {
+                          return Container();
+                        },
+                        itemCount: model?.items.length ?? 0),
                   ),
                 ],
               );
@@ -326,7 +315,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  _taskModel.startTime.toString(),
+                  _taskModel?.startTime.toString() ?? "",
                   style: AppStyles.card_view_body,
                 ),
               )
@@ -343,7 +332,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  _taskModel.finishByTime.toString(),
+                  _taskModel?.finishByTime.toString() ?? "",
                   style: AppStyles.card_view_body,
                 ),
               )
