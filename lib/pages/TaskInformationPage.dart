@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trytulu/AppColors.dart';
 import 'package:trytulu/AppStyles.dart';
+import 'package:trytulu/Components/AppButton.dart';
 import 'package:trytulu/CustomAppBarWidget.dart';
 import 'package:trytulu/blocs/task/task_bloc.dart';
 import 'package:trytulu/models/ChecklistModel.dart';
@@ -88,16 +89,9 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               style: AppStyles.appbar_title,
             ),
           ),
-          ElevatedButton(
-            onPressed: () {},
-            child: Text('ACCEPTED'),
-            style: ButtonStyle(
-              padding: MaterialStateProperty.all<EdgeInsets>(
-                  EdgeInsets.symmetric(horizontal: 18, vertical: 12)),
-              backgroundColor: MaterialStateProperty.all(AppColors.main),
-              shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16))),
-            ),
+          AppButton(
+            text: 'ACCEPTED',
+            onTap: () => _handleAcceptedButtonTapped(),
           )
         ],
       ),
@@ -366,5 +360,9 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
   Widget _handleTaskNotLoadedState() {
     print("Error");
     return Container();
+  }
+
+  _handleAcceptedButtonTapped() {
+    print("_handleAcceptedButtonTapped");
   }
 }
