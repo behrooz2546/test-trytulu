@@ -31,6 +31,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late List<CheckListModel> checkListModel;
+
+  @override
+  void initState() {
+    super.initState();
+    checkListModel = CheckListModel.getSample();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -44,14 +52,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: 'Task Information',
                 ),
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 32),
-                    color: AppColors.backgroundColor,
-                    child: Column(
-                      children: [
-                        _buildCardView(),
-                      ],
+                  child: SingleChildScrollView(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 32,
+                      ),
+                      color: AppColors.backgroundColor,
+                      child: Column(
+                        children: [
+                          _buildCardView(),
+                          SizedBox(height: 32),
+                          _buildChecklist(),
+                        ],
+                      ),
                     ),
                   ),
                 )
@@ -111,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
             style: ButtonStyle(
               padding: MaterialStateProperty.all<EdgeInsets>(
                   EdgeInsets.symmetric(horizontal: 18, vertical: 12)),
-              backgroundColor: MaterialStateProperty.all(AppColors.darkPurple),
+              backgroundColor: MaterialStateProperty.all(AppColors.main),
               shape: MaterialStateProperty.all(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16))),
             ),
@@ -206,6 +220,80 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  _buildChecklist() {
+    return Column(
+      children: [
+        Container(
+            height: 64,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: AppColors.main,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  'Checklist',
+                  textAlign: TextAlign.left,
+                  style: AppStyles.appbar_title.copyWith(color: Colors.white),
+                ),
+              ],
+            )),
+        Container(
+          color: Colors.white,
+          child: ListView.builder(
+            itemCount: checkListModel.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              var model = checkListModel[index];
+              return ExpansionTile(
+                tilePadding: const EdgeInsets.symmetric(horizontal: 80),
+                title: Text(
+                  model.name,
+                  style: AppStyles.checklist_item_title,
+                ),
+                children: [
+                  Container(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(
+                            model.items[index].title,
+                            style: AppStyles.checklist_item_title.copyWith(
+                              color: AppColors.black,
+                              fontSize: 14,
+                            ),
+                          ),
+                          subtitle: Text(
+                            model.items[index].input,
+                            style: AppStyles.checklist_item_title.copyWith(
+                              color: AppColors.gray,
+                              fontSize: 10,
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return Container();
+                      },
+                      itemCount: model.items.length,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        )
+      ],
+    );
+  }
+
   _buildCalendarView() {
     return Container(
       height: 110,
@@ -264,5 +352,55 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+}
+
+class Item {
+  String title;
+  String input;
+
+  Item({
+    required this.title,
+    required this.input,
+  });
+}
+
+class CheckListModel {
+  String name;
+  List<Item> items;
+  bool isExpanded;
+
+  CheckListModel({
+    required this.name,
+    required this.items,
+    this.isExpanded = false,
+  });
+
+  static List<CheckListModel> getSample() {
+    return [
+      CheckListModel(
+        name: "Before starting",
+        items: [
+          Item(title: "Selfie with equipment", input: "photo"),
+          Item(title: "Record filling up bucket ", input: "video"),
+          Item(title: "Bucket soap measurement", input: "number"),
+        ],
+      ),
+      CheckListModel(
+        name: "Main Room",
+        items: [
+          Item(title: "Photo of room", input: "photo"),
+          Item(title: "Mop the floor", input: "video"),
+        ],
+      ),
+      CheckListModel(
+        name: "Finishing",
+        items: [
+          Item(title: "Clean equipment and dispose of rubbish", input: "photo"),
+          Item(title: "Equipment put back", input: "video"),
+          Item(title: "Building door locked", input: "checkbox"),
+        ],
+      )
+    ];
   }
 }
