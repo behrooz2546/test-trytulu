@@ -58,10 +58,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
           _buildLineView(),
           _buildLocationView(location: taskModel.location),
           _buildLineView(),
-          _buildCalendarView(
-            startTime: taskModel.startTime,
-            finishTime: taskModel.finishByTime,
-          ),
+          _buildCalendarView(taskModel: taskModel),
         ],
       ),
     );
@@ -259,24 +256,11 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
     );
   }
 
-  String _durationToString(int minutes) {
-    var duration = Duration(minutes: minutes);
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    return duration.inHours == 0
-        ? "$twoDigitMinutes min"
-        : "${twoDigits(duration.inHours)} hour, $twoDigitMinutes min";
-  }
-
   _buildCalendarView({
-    required DateTime startTime,
-    required DateTime finishTime,
+    required TaskModel taskModel,
   }) {
     final DateFormat dateFormatter = DateFormat('E dd, MMM');
     final DateFormat timeFormatter = DateFormat.jm();
-
-    var deltaMin = finishTime.difference(startTime).inMinutes;
-    final timeForTask = _durationToString(deltaMin);
 
     return Container(
       height: 110,
@@ -294,7 +278,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  dateFormatter.format(startTime),
+                  dateFormatter.format(taskModel.startTime),
                   style: AppStyles.card_view_body,
                 ),
               )
@@ -311,7 +295,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  "Start ${timeFormatter.format(startTime).toLowerCase()} - ${timeFormatter.format(finishTime).toLowerCase()}",
+                  "Start ${timeFormatter.format(taskModel.startTime).toLowerCase()} - ${timeFormatter.format(taskModel.finishByTime).toLowerCase()}",
                   style:
                       AppStyles.card_view_body.copyWith(color: AppColors.black),
                 ),
@@ -326,7 +310,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
                 SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    'Time for task: $timeForTask',
+                    'Time for task: ${taskModel.durationToString()}',
                     style: AppStyles.card_view_body,
                   ),
                 )
@@ -381,11 +365,5 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
 
   _handleAcceptedButtonTapped() {
     print("_handleAcceptedButtonTapped");
-  }
-
-  int daysBetween(DateTime from, DateTime to) {
-    from = DateTime(from.year, from.month, from.day);
-    to = DateTime(to.year, to.month, to.day);
-    return (to.difference(from).inHours / 24).round();
   }
 }

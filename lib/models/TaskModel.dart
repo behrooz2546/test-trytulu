@@ -40,4 +40,14 @@ class TaskModel {
       _$TaskModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$TaskModelToJson(this);
+
+  String durationToString() {
+    var minutes = finishByTime.difference(startTime).inMinutes;
+    var duration = Duration(minutes: minutes);
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    return duration.inHours == 0
+        ? "$twoDigitMinutes min"
+        : "${twoDigits(duration.inHours)} hour, $twoDigitMinutes min";
+  }
 }
