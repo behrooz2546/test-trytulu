@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:trytulu/AppColors.dart';
 import 'package:trytulu/AppStyles.dart';
 import 'package:trytulu/CustomAppBarWidget.dart';
+import 'package:trytulu/models/ChecklistModel.dart';
 
 void main() {
   runApp(MyApp());
@@ -352,55 +353,5 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
-  }
-}
-
-class Item {
-  String title;
-  String input;
-
-  Item({
-    required this.title,
-    required this.input,
-  });
-}
-
-class CheckListModel {
-  String name;
-  List<Item> items;
-  bool isExpanded;
-
-  CheckListModel({
-    required this.name,
-    required this.items,
-    this.isExpanded = false,
-  });
-
-  static List<CheckListModel> getSample() {
-    return [
-      CheckListModel(
-        name: "Before starting",
-        items: [
-          Item(title: "Selfie with equipment", input: "photo"),
-          Item(title: "Record filling up bucket ", input: "video"),
-          Item(title: "Bucket soap measurement", input: "number"),
-        ],
-      ),
-      CheckListModel(
-        name: "Main Room",
-        items: [
-          Item(title: "Photo of room", input: "photo"),
-          Item(title: "Mop the floor", input: "video"),
-        ],
-      ),
-      CheckListModel(
-        name: "Finishing",
-        items: [
-          Item(title: "Clean equipment and dispose of rubbish", input: "photo"),
-          Item(title: "Equipment put back", input: "video"),
-          Item(title: "Building door locked", input: "checkbox"),
-        ],
-      )
-    ];
   }
 }
