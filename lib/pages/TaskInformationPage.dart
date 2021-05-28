@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:trytulu/AppColors.dart';
 import 'package:trytulu/AppStyles.dart';
 import 'package:trytulu/Components/AppButton.dart';
@@ -19,7 +20,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: AppColors.main,
       child: SafeArea(
         child: Scaffold(
           body: Container(
@@ -53,7 +54,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
         children: [
           _buildCardHeader(taskName: taskModel.name),
           _buildLineView(),
-          _buildClientInformation(location: taskModel.location),
+          _buildClientInformation(),
           _buildLineView(),
           _buildLocationView(location: taskModel.location),
           _buildLineView(),
@@ -98,7 +99,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
     );
   }
 
-  _buildClientInformation({required String location}) {
+  _buildClientInformation() {
     return Container(
       height: 80,
       width: double.infinity,
@@ -115,7 +116,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  location,
+                  'Client Name',
                   style: AppStyles.card_view_body,
                 ),
               )
@@ -258,10 +259,25 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
     );
   }
 
+  String _durationToString(int minutes) {
+    var duration = Duration(minutes: minutes);
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    return duration.inHours == 0
+        ? "$twoDigitMinutes min"
+        : "${twoDigits(duration.inHours)} hour, $twoDigitMinutes min";
+  }
+
   _buildCalendarView({
     required DateTime startTime,
     required DateTime finishTime,
   }) {
+    final DateFormat dateFormatter = DateFormat('E dd, MMM');
+    final DateFormat timeFormatter = DateFormat.jm();
+
+    var deltaMin = finishTime.difference(startTime).inMinutes;
+    final timeForTask = _durationToString(deltaMin);
+
     return Container(
       height: 110,
       width: double.infinity,
@@ -278,7 +294,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  startTime.toString(),
+                  dateFormatter.format(startTime),
                   style: AppStyles.card_view_body,
                 ),
               )
@@ -295,8 +311,9 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  finishTime.toString(),
-                  style: AppStyles.card_view_body,
+                  "Start ${timeFormatter.format(startTime).toLowerCase()} - ${timeFormatter.format(finishTime).toLowerCase()}",
+                  style:
+                      AppStyles.card_view_body.copyWith(color: AppColors.black),
                 ),
               )
             ],
@@ -309,7 +326,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
                 SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    'Time for task: 3 hours',
+                    'Time for task: $timeForTask',
                     style: AppStyles.card_view_body,
                   ),
                 )
@@ -364,5 +381,11 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
 
   _handleAcceptedButtonTapped() {
     print("_handleAcceptedButtonTapped");
+  }
+
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round();
   }
 }
