@@ -36,7 +36,6 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
       final List<TaskModel> tasks = (response.body as List<dynamic>)
           .map((e) => TaskModel.fromJson(e as Map<String, dynamic>))
           .toList();
-      print(tasks);
       setState(() {
         _taskModel = tasks[0];
         isLoading = false;
@@ -57,7 +56,9 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
           body: Container(
             child: isLoading
                 ? Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                      color: AppColors.main,
+                    ),
                   )
                 : Column(
                     children: [
@@ -264,6 +265,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
             itemBuilder: (context, index) {
               var model = _taskModel.checkList[index];
               return ExpansionTile(
+                collapsedIconColor: AppColors.main,
                 tilePadding: const EdgeInsets.symmetric(horizontal: 80),
                 title: Text(
                   model.name,
