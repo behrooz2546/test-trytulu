@@ -1,11 +1,12 @@
-import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trytulu/AppColors.dart';
 import 'package:trytulu/AppStyles.dart';
+import 'package:trytulu/Components/AppButton.dart';
 import 'package:trytulu/CustomAppBarWidget.dart';
+import 'package:trytulu/blocs/task/task_bloc.dart';
+import 'package:trytulu/models/ChecklistModel.dart';
 import 'package:trytulu/models/TaskModel.dart';
-import 'package:trytulu/services/TaskService.dart';
 
 class TaskInformationPage extends StatefulWidget {
   TaskInformationPage({Key? key}) : super(key: key);
@@ -15,38 +16,6 @@ class TaskInformationPage extends StatefulWidget {
 }
 
 class _TaskInformationPageState extends State<TaskInformationPage> {
-  late TaskModel _taskModel;
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      afterFirstLayout();
-    });
-  }
-
-  afterFirstLayout() async {
-    var taskService = Provider.of<ChopperClient>(context, listen: false)
-        .getService<TaskService>();
-    var response = await taskService.getTasks();
-
-    if (response.isSuccessful) {
-      final List<TaskModel> tasks = (response.body as List<dynamic>)
-          .map((e) => TaskModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-      setState(() {
-        _taskModel = tasks[0];
-        isLoading = false;
-      });
-    } else {
-      // Error code received from server
-      final code = response.statusCode;
-      final error = response.error;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -54,44 +23,24 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
       child: SafeArea(
         child: Scaffold(
           body: Container(
-            child: isLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.main,
-                    ),
-                  )
-                : Column(
-                    children: [
-                      CustomAppBarWidget(
-                        title: 'Task Information',
-                      ),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 32,
-                            ),
-                            color: AppColors.backgroundColor,
-                            child: Column(
-                              children: [
-                                _buildCardView(),
-                                SizedBox(height: 32),
-                                _buildChecklist(),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+            child: BlocBuilder<TaskBloc, TaskState>(
+              builder: (context, state) {
+                if (state is TaskLoading) {
+                  return _handleTaskLoadingState();
+                } else if (state is TaskLoaded) {
+                  return _handleTaskLoadedState(state);
+                } else {
+                  return _handleTaskNotLoadedState();
+                }
+              },
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildCardView() {
+  Widget _buildCardView({required TaskModel taskModel}) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -102,13 +51,16 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
       ),
       child: Column(
         children: [
-          _buildCardHeader(),
+          _buildCardHeader(taskName: taskModel.name),
           _buildLineView(),
-          _buildClientInformation(),
+          _buildClientInformation(location: taskModel.location),
           _buildLineView(),
-          _buildLocationView(),
+          _buildLocationView(location: taskModel.location),
           _buildLineView(),
-          _buildCalendarView(),
+          _buildCalendarView(
+            startTime: taskModel.startTime,
+            finishTime: taskModel.finishByTime,
+          ),
         ],
       ),
     );
@@ -122,34 +74,31 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
     );
   }
 
-  _buildCardHeader() {
+  _buildCardHeader({
+    required String taskName,
+  }) {
     return Container(
       height: 80,
       padding: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            _taskModel.name,
-            style: AppStyles.appbar_title,
-          ),
-          ElevatedButton(
-            onPressed: () {},
-            child: Text('ACCEPTED'),
-            style: ButtonStyle(
-              padding: MaterialStateProperty.all<EdgeInsets>(
-                  EdgeInsets.symmetric(horizontal: 18, vertical: 12)),
-              backgroundColor: MaterialStateProperty.all(AppColors.main),
-              shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16))),
+          Expanded(
+            child: Text(
+              taskName,
+              style: AppStyles.appbar_title,
             ),
+          ),
+          AppButton(
+            text: 'ACCEPTED',
+            onTap: () => _handleAcceptedButtonTapped(),
           )
         ],
       ),
     );
   }
 
-  _buildClientInformation() {
+  _buildClientInformation({required String location}) {
     return Container(
       height: 80,
       width: double.infinity,
@@ -166,7 +115,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  _taskModel.location,
+                  location,
                   style: AppStyles.card_view_body,
                 ),
               )
@@ -194,7 +143,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
     );
   }
 
-  _buildLocationView() {
+  _buildLocationView({required String location}) {
     return Container(
       height: 80,
       width: double.infinity,
@@ -211,7 +160,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  _taskModel.location,
+                  location,
                   style: AppStyles.card_view_body,
                 ),
               ),
@@ -234,7 +183,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
     );
   }
 
-  _buildChecklist() {
+  _buildChecklist({required List<CheckListModel> checkList}) {
     return Column(
       children: [
         Container(
@@ -259,11 +208,11 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
         Container(
           color: Colors.white,
           child: ListView.builder(
-            itemCount: _taskModel.checkList.length,
+            itemCount: checkList.length,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              var model = _taskModel.checkList[index];
+              var model = checkList[index];
               return ExpansionTile(
                 collapsedIconColor: AppColors.main,
                 tilePadding: const EdgeInsets.symmetric(horizontal: 80),
@@ -309,7 +258,10 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
     );
   }
 
-  _buildCalendarView() {
+  _buildCalendarView({
+    required DateTime startTime,
+    required DateTime finishTime,
+  }) {
     return Container(
       height: 110,
       width: double.infinity,
@@ -326,7 +278,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  _taskModel.startTime.toString(),
+                  startTime.toString(),
                   style: AppStyles.card_view_body,
                 ),
               )
@@ -343,7 +295,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
               SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  _taskModel.finishByTime.toString(),
+                  finishTime.toString(),
                   style: AppStyles.card_view_body,
                 ),
               )
@@ -367,5 +319,50 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
         ],
       ),
     );
+  }
+
+  Widget _handleTaskLoadingState() {
+    return Center(
+      child: CircularProgressIndicator(
+        color: AppColors.main,
+      ),
+    );
+  }
+
+  Widget _handleTaskLoadedState(TaskLoaded state) {
+    return Column(
+      children: [
+        CustomAppBarWidget(
+          title: 'Task Information',
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 32,
+              ),
+              color: AppColors.backgroundColor,
+              child: Column(
+                children: [
+                  _buildCardView(taskModel: state.tasks[0]),
+                  SizedBox(height: 32),
+                  _buildChecklist(checkList: state.tasks[0].checkList),
+                ],
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _handleTaskNotLoadedState() {
+    print("Error");
+    return Container();
+  }
+
+  _handleAcceptedButtonTapped() {
+    print("_handleAcceptedButtonTapped");
   }
 }
