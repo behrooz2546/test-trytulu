@@ -15,7 +15,6 @@ class MyApp extends StatelessWidget {
       title: 'TryTulu Test App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        // fontFamily: 'Montserrat',
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
