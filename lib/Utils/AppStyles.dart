@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:trytulu/AppColors.dart';
+import 'package:trytulu/Utils/AppColors.dart';
 
 class AppStyles {
   static const appbar_title = TextStyle(

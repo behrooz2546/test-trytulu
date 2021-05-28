@@ -2,7 +2,7 @@ import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:trytulu/MyBlocObserver.dart';
+import 'package:trytulu/Utils/MyBlocObserver.dart';
 import 'package:trytulu/blocs/task/task_bloc.dart';
 import 'package:trytulu/pages/TaskInformationPage.dart';
 import 'package:trytulu/services/TaskRepository.dart';

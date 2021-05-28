@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:trytulu/AppColors.dart';
-import 'package:trytulu/AppStyles.dart';
+import 'package:trytulu/Utils/AppColors.dart';
+import 'package:trytulu/Utils/AppStyles.dart';
 import 'package:trytulu/Components/AppButton.dart';
-import 'package:trytulu/CustomAppBarWidget.dart';
+import 'package:trytulu/Components/CustomAppBarWidget.dart';
 import 'package:trytulu/blocs/task/task_bloc.dart';
 import 'package:trytulu/models/ChecklistModel.dart';
 import 'package:trytulu/models/TaskModel.dart';

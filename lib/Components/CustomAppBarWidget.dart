@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:trytulu/AppStyles.dart';
+import 'package:trytulu/Utils/AppStyles.dart';
 
 class CustomAppBarWidget extends StatelessWidget {
   final String title;
