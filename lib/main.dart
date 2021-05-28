@@ -1,10 +1,15 @@
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:trytulu/MyBlocObserver.dart';
+import 'package:trytulu/blocs/task/task_bloc.dart';
 import 'package:trytulu/pages/TaskInformationPage.dart';
+import 'package:trytulu/services/TaskRepository.dart';
 import 'package:trytulu/services/TaskService.dart';
 
 void main() {
+  Bloc.observer = MyBlocObserver();
   runApp(MyApp());
 }
 
@@ -29,7 +34,12 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: TaskInformationPage(),
+        home: BlocProvider(
+          create: (context) =>
+              TaskBloc(taskRepository: ApiTaskRepository(context: context))
+                ..add(LoadTasks()),
+          child: TaskInformationPage(),
+        ),
       ),
     );
   }

@@ -5,12 +5,16 @@ import 'package:trytulu/models/TaskModel.dart';
 import 'package:trytulu/services/TaskService.dart';
 
 abstract class TaskRepository {
-  Future<List<TaskModel>?> fetchTasks(BuildContext context);
+  Future<List<TaskModel>?> fetchTasks();
 }
 
 class ApiTaskRepository implements TaskRepository {
+  final BuildContext context;
+
+  ApiTaskRepository({required this.context});
+
   @override
-  Future<List<TaskModel>?> fetchTasks(BuildContext context) async {
+  Future<List<TaskModel>?> fetchTasks() async {
     var taskService = Provider.of<ChopperClient>(context, listen: false)
         .getService<TaskService>();
     try {
@@ -19,6 +23,9 @@ class ApiTaskRepository implements TaskRepository {
         final List<TaskModel> tasks = (response.body as List<dynamic>)
             .map((e) => TaskModel.fromJson(e as Map<String, dynamic>))
             .toList();
+        final snackBar =
+            SnackBar(content: Text('First Task Successfully Loaded'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return tasks;
       } else {
         final snackBar = SnackBar(content: Text(response.error.toString()));
