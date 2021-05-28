@@ -4,8 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:trytulu/models/TaskModel.dart';
 import 'package:trytulu/services/TaskService.dart';
 
-class TaskRepository {
-  static Future<List<TaskModel>?> fetchTasks(BuildContext context) async {
+abstract class TaskRepository {
+  Future<List<TaskModel>?> fetchTasks(BuildContext context);
+}
+
+class ApiTaskRepository implements TaskRepository {
+  @override
+  Future<List<TaskModel>?> fetchTasks(BuildContext context) async {
     var taskService = Provider.of<ChopperClient>(context, listen: false)
         .getService<TaskService>();
     try {

@@ -26,7 +26,7 @@ class _TaskInformationPageState extends State<TaskInformationPage> {
   }
 
   afterFirstLayout() async {
-    var tasks = await TaskRepository.fetchTasks(context);
+    var tasks = await ApiTaskRepository().fetchTasks(context);
 
     setState(() {
       if (tasks != null) {
